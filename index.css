@@ -1,0 +1,23 @@
+form {
+    margin: 0 auto;
+    width: 400px;
+    padding: 1em;
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
+}
+
+form div {
+    margin-bottom: 20px;
+    display: block;
+}
+
+.panel ul {
+    list-style-type: none;
+}
+
+.unorderedList {
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
+    margin-bottom: 10px;
+    width: 400px;
+}
