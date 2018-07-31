@@ -15,12 +15,10 @@ form.addEventListener('submit', function(e) {
     var flavorShotContainer = document.createElement('li');
     var caffeineRatingContainer = document.createElement('li');
 
-    
-
     var unorderedList = document.createElement('ul');
     var order = document.createElement('li');
 
-    unorderedList.classList.add('unorderedList')
+    unorderedList.classList.add('unorderedList');
 
     coffeeContainer.textContent = coffeeOrder.value;
     emailContainer.textContent = email.value;
@@ -37,5 +35,9 @@ form.addEventListener('submit', function(e) {
     order.appendChild(unorderedList);
 
     document.querySelector('.orders-list').appendChild(order);
-    
+
+    // var ordersList = document.querySelectorAll('.unorderedList');
+    // var ordersJSON = JSON.stringify(ordersList);
+    // localStorage.setItem('order', ordersJSON);
+    // console.log(localStorage)
 });
