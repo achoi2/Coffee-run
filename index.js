@@ -7,48 +7,51 @@ var url = 'https://dc-coffeerun.herokuapp.com/api/coffeeorders';
 //     localStorage.setItem('orders', JSON.stringify(containersArray));
 // };
 
-var createOrder = function(orders) {
-    orders = document.createElement('li');
+// var createOrder = function(orders) {
+//     orders = document.createElement('li');
+// };
 
-};
 
+// Updates orders
 var updateOrders = function(order) {
-        var unorderedList = document.createElement('ul');
-        unorderedList.classList.add('unorderedList');
-        var coffeeContainer = document.createElement('li');
-        var emailContainer = document.createElement('li');
-        var sizeContainer = document.createElement('li');
-        var flavorShotContainer = document.createElement('li');
-        var caffeineRatingContainer = document.createElement('li');
+    var unorderedList = document.createElement('ul');
+    unorderedList.classList.add('unorderedList');
+    var coffeeContainer = document.createElement('li');
+    var emailContainer = document.createElement('li');
+    var sizeContainer = document.createElement('li');
+    var flavorShotContainer = document.createElement('li');
+    var caffeineRatingContainer = document.createElement('li');
+    var closeButton = document.createElement('button');
+    
+    
+    coffeeContainer.textContent = order.coffee;
+    emailContainer.textContent = order.emailAddress;
+    sizeContainer.textContent = order.size;
+    flavorShotContainer.textContent = order.flavor;
+    caffeineRatingContainer.textContent = order.strength;
 
-        coffeeContainer.textContent = order.coffee;
-        emailContainer.textContent = order.emailAddress;
-        sizeContainer.textContent = order.size;
-        flavorShotContainer.textContent = order.flavor;
-        caffeineRatingContainer.textContent = order.strength;
+    unorderedList.appendChild(coffeeContainer);
+    unorderedList.appendChild(emailContainer);
+    unorderedList.appendChild(sizeContainer);
+    unorderedList.appendChild(flavorShotContainer);
+    unorderedList.appendChild(caffeineRatingContainer);
+    unorderedList.appendChild(closeButton);
 
-        unorderedList.appendChild(coffeeContainer);
-        unorderedList.appendChild(emailContainer);
-        unorderedList.appendChild(sizeContainer);
-        unorderedList.appendChild(flavorShotContainer);
-        unorderedList.appendChild(caffeineRatingContainer);
-
-        ordersList.appendChild(unorderedList);
-        var closeButton = document.createElement('button');
-        unorderedList.appendChild(closeButton);
-
-        closeButton.addEventListener('click', function(e) {
-            console.log(e)
-            $.ajax({
-                url:
-                    `http://dc-coffeerun.herokuapp.com/api/coffeeorders/${order.emailAddress}`,
-                type: 'DELETE',
-                success: function() {
-                    unorderedList.remove();
-                }
-            });
+    ordersList.appendChild(unorderedList);
+    
+    closeButton.addEventListener('click', function(e) {
+        console.log(e);
+        $.ajax({
+            url: `http://dc-coffeerun.herokuapp.com/api/coffeeorders/${
+                order.emailAddress
+            }`,
+            type: 'DELETE',
+            success: function() {
+                unorderedList.remove();
+            }
         });
-    }
+    });
+};
 
 // var getfromLocalStorage = function() {
 //     var getOrders = localStorage.getItem('orders');
@@ -67,6 +70,7 @@ var updateOrders = function(order) {
 //     });
 // };
 
+// Fills out form 
 form.addEventListener('submit', function(e) {
     e.preventDefault();
     var coffeeOrder = document.querySelector('[name="coffeeOrder"]');
@@ -82,19 +86,19 @@ form.addEventListener('submit', function(e) {
         flavor: flavorShot.value,
         strength: caffeineRating.value
     };
-    updateOrders(orders)
+    updateOrders(orders);
 
     containersArray.push(orders);
     // updateLocalStorage();
     // clearOrders();
-   
 
     $.post(url, orders);
 });
 
 // getfromLocalStorage();
-updateOrders(containersArray);
 
+
+//recieves data from database
 $.ajax({
     url: 'https://dc-coffeerun.herokuapp.com/api/coffeeorders',
     success: function(orders) {
@@ -102,8 +106,7 @@ $.ajax({
             updateOrders(orders[key]);
             containersArray.push(orders[key]);
         }
-        
     }
 });
 
-localStorage.clear()
+localStorage.clear();
