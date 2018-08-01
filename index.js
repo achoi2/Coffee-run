@@ -1,14 +1,31 @@
 var form = document.querySelector('[name="coffeeOrderForm"]');
 var containersArray = [];
 var ordersList = document.querySelector('.orders-list');
-var updateLocalStorage = function() {
-    localStorage.setItem('orders', JSON.stringify(containersArray));
+var url = 'https://dc-coffeerun.herokuapp.com/api/coffeeorders';
+
+
+containersArray.forEach(function(container) {
+    $.ajax({
+        url: url,
+        type: 'DELETE',
+        success: function (result) {
+            container.remove()
+        }
+    });
+})
+
+// var updateLocalStorage = function() {
+//     localStorage.setItem('orders', JSON.stringify(containersArray));
+// };
+
+var createOrder = function(orders) {
+    orders = document.createElement('li');
 };
 
 var updateOrders = function() {
-    containersArray.forEach(function (order) {
+    containersArray.forEach(function(order) {
         var unorderedList = document.createElement('ul');
-        unorderedList.classList.add('unorderedList')
+        unorderedList.classList.add('unorderedList');
         var coffeeContainer = document.createElement('li');
         var emailContainer = document.createElement('li');
         var sizeContainer = document.createElement('li');
@@ -16,10 +33,10 @@ var updateOrders = function() {
         var caffeineRatingContainer = document.createElement('li');
 
         coffeeContainer.textContent = order.coffee;
-        emailContainer.textContent = order.email;
+        emailContainer.textContent = order.emailAddress;
         sizeContainer.textContent = order.size;
-        flavorShotContainer.textContent = order.flavorShot;
-        caffeineRatingContainer.textContent = order.caffeineRating;
+        flavorShotContainer.textContent = order.flavor;
+        caffeineRatingContainer.textContent = order.strength;
 
         unorderedList.appendChild(coffeeContainer);
         unorderedList.appendChild(emailContainer);
@@ -28,6 +45,12 @@ var updateOrders = function() {
         unorderedList.appendChild(caffeineRatingContainer);
 
         ordersList.appendChild(unorderedList);
+        var closeButton = document.createElement('button');
+        unorderedList.appendChild(closeButton);
+
+        closeButton.addEventListener('click', function(e) {
+            unorderedList.remove();
+        });
     });
 };
 
@@ -36,19 +59,17 @@ var getfromLocalStorage = function() {
     var ordersObj = JSON.parse(getOrders);
     if (ordersObj !== null) {
         ordersObj.forEach(function(order) {
-            containersArray.push(order)
+            containersArray.push(order);
         });
-    };
+    }
 };
-
 
 var clearOrders = function() {
     var pendingOrders = document.querySelectorAll('.unorderedList');
     pendingOrders.forEach(function(order) {
-        order.remove()
+        order.remove();
     });
 };
-
 
 form.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -60,18 +81,32 @@ form.addEventListener('submit', function(e) {
 
     var orders = {
         coffee: coffeeOrder.value,
-        email: email.value,
+        emailAddress: email.value,
         size: size.value,
-        flavorShot: flavorShot.value,
-        caffeineRating: caffeineRating.value
+        flavor: flavorShot.value,
+        strength: caffeineRating.value
     };
 
     containersArray.push(orders);
-    updateLocalStorage();
+    // updateLocalStorage();
     clearOrders();
     updateOrders();
-    console.log(localStorage);
+
+    $.post(url, orders);
 });
 
 getfromLocalStorage();
 updateOrders();
+
+
+
+$.ajax({
+    url: 'https://dc-coffeerun.herokuapp.com/api/coffeeorders',
+    success: function(orders) {
+        for (var key in orders) {
+            createOrder(orders[key]);
+            containersArray.push(orders[key]);
+        }
+    }
+});
+
