@@ -13,7 +13,7 @@ var url = 'https://dc-coffeerun.herokuapp.com/api/coffeeorders';
 
 
 // Updates orders
-var updateOrders = function(order) {
+var updateOrders = function (order) {
     var unorderedList = document.createElement('ul');
     unorderedList.classList.add('unorderedList');
     var coffeeContainer = document.createElement('li');
@@ -22,8 +22,8 @@ var updateOrders = function(order) {
     var flavorShotContainer = document.createElement('li');
     var caffeineRatingContainer = document.createElement('li');
     var closeButton = document.createElement('button');
-    
-    
+
+
     coffeeContainer.textContent = order.coffee;
     emailContainer.textContent = order.emailAddress;
     sizeContainer.textContent = order.size;
@@ -38,18 +38,13 @@ var updateOrders = function(order) {
     unorderedList.appendChild(closeButton);
 
     ordersList.appendChild(unorderedList);
-    
-    closeButton.addEventListener('click', function(e) {
+
+    closeButton.addEventListener('click', function (e) {
         console.log(e);
-        $.ajax({
-            url: `http://dc-coffeerun.herokuapp.com/api/coffeeorders/${
-                order.emailAddress
-            }`,
-            type: 'DELETE',
-            success: function() {
-                unorderedList.remove();
-            }
-        });
+        var deletePromise = fetch(`http://dc-coffeerun.herokuapp.com/api/coffeeorders/${order.emailAddress}`)
+        deletePromise.then(function (orders) {
+            unorderedList.remove(orders)
+        });            
     });
 };
 
@@ -71,7 +66,7 @@ var updateOrders = function(order) {
 // };
 
 // Fills out form 
-form.addEventListener('submit', function(e) {
+form.addEventListener('submit', function (e) {
     e.preventDefault();
     var coffeeOrder = document.querySelector('[name="coffeeOrder"]');
     var email = document.querySelector('[name="email"]');
@@ -79,34 +74,48 @@ form.addEventListener('submit', function(e) {
     var flavorShot = document.querySelector('[name="flavorShot"]');
     var caffeineRating = document.querySelector('[name="caffeineRating"]');
 
-    var orders = {
+    var order = {
         coffee: coffeeOrder.value,
         emailAddress: email.value,
         size: size.value,
         flavor: flavorShot.value,
         strength: caffeineRating.value
     };
-    updateOrders(orders);
+    updateOrders(order);
 
-    containersArray.push(orders);
+    containersArray.push(order);
     // updateLocalStorage();
     // clearOrders();
 
-    $.post(url, orders);
+    // $.post(url, order);
+
+    var postOrders = fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(order),
+        headers: {'Content-Type': 'application/json'}
+    }).then(function(data) {
+       console.log(data)
+        return data.json()
+    }).then(function(data) { 
+        console.log(data)
+    })
 });
 
 // getfromLocalStorage();
 
 
 //recieves data from database
-$.ajax({
-    url: 'https://dc-coffeerun.herokuapp.com/api/coffeeorders',
-    success: function(orders) {
+var coffeeOrdersPromise = fetch('https://dc-coffeerun.herokuapp.com/api/coffeeorders');
+
+coffeeOrdersPromise.then(function(response) {
+    var toJSONPromise = response.json();
+    toJSONPromise.then(function(orders) {
         for (var key in orders) {
             updateOrders(orders[key]);
             containersArray.push(orders[key]);
         }
-    }
+    });
 });
+
 
 localStorage.clear();
